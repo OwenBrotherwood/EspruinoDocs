@@ -6,7 +6,7 @@ For the daylight saving to work (UK only) the time must be read at least every s
 
 var dstStatus = true;
 
-function DS3231(_i2c) { this.i2c = _i2c; }
+function DS1307(_i2c) { this.i2c = _i2c; }
 
 //private
 var C = {
@@ -57,7 +57,7 @@ function isDST(day,month,dow) {
 
 // Public functions
 // Set the day of the week
-DS3231.prototype.setDow = function(day) {
+DS1307.prototype.setDow = function(day) {
   var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   var idx = days.indexOf(day);
   if (idx<0) {
@@ -69,7 +69,7 @@ DS3231.prototype.setDow = function(day) {
 };
 
 // Set the date
-DS3231.prototype.setDate = function(date,month,year) {
+DS1307.prototype.setDate = function(date,month,year) {
   this.i2c.writeTo(C.i2c_address,[C.dateReg, (dec2bcd(date))]);
   this.i2c.writeTo(C.i2c_address,[C.monthReg, (dec2bcd(month))]);
   this.i2c.writeTo(C.i2c_address,[C.yearReg, (dec2bcd(year))]);
@@ -77,14 +77,14 @@ DS3231.prototype.setDate = function(date,month,year) {
 };
 
 // Set the time
-DS3231.prototype.setTime = function(hour,minute) {
+DS1307.prototype.setTime = function(hour,minute) {
   this.i2c.writeTo(C.i2c_address,[C.secsReg, 0]);
   this.i2c.writeTo(C.i2c_address,[C.minsReg, (dec2bcd(minute))]);
   this.i2c.writeTo(C.i2c_address,[C.hourReg, (dec2bcd(hour))]);
 };
 
 // Read the current date & time
-DS3231.prototype.readDateTime = function () {
+DS1307.prototype.readDateTime = function () {
   this.i2c.writeTo(C.i2c_address, C.secsReg/* address*/);
   var data = this.i2c.readFrom(C.i2c_address, 7/* bytes */); //read number of bytes from address
   var seconds = bcd2dec(data[0]);
@@ -113,4 +113,4 @@ DS3231.prototype.readDateTime = function () {
   return rtcDateTime;
 };
 
-exports.connect = function(i2c) { return new DS3231(i2c); };
+exports.connect = function(i2c) { return new DS1307(i2c); };
